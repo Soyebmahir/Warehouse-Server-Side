@@ -18,6 +18,7 @@ async function run() {
     try {
         await client.connect();
         const productCollection = client.db('workoutGears').collection('product')
+        const supplierInfoCollection = client.db('suppliers').collection('info')
 
         app.get('/product',async(req,res)=>{
 
@@ -26,7 +27,15 @@ async function run() {
             const products=await cursor.toArray();
             res.send(products)
         })
+        app.get('/suppliers',async(req,res)=>{
 
+            const query={};
+            const cursor =supplierInfoCollection.find(query);
+            const products=await cursor.toArray();
+            res.send(products)
+        })
+
+        
         app.get('/product/:id',async(req,res)=>{
             // console.log(req.params);
             const id=req.params.id;
