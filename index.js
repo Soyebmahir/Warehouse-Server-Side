@@ -9,3 +9,9 @@ app.use(cors())
 app.use(express.json())
  
 
+app.get('/', (req, res) => {
+    res.send('warehouse is running and  waiting for data')
+})
+app.listen(port, () => {
+    console.log('warehouse is running on port : ', port);
+})
