@@ -20,49 +20,70 @@ async function run() {
         const productCollection = client.db('workoutGears').collection('product')
         const supplierInfoCollection = client.db('suppliers').collection('info')
 
-        app.get('/product',async(req,res)=>{
+        app.get('/product', async (req, res) => {
 
-            const query={};
-            const cursor =productCollection.find(query);
-            const products=await cursor.toArray();
+            const query = {};
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
             res.send(products)
         })
-        app.get('/suppliers',async(req,res)=>{
+        app.get('/suppliers', async (req, res) => {
 
-            const query={};
-            const cursor =supplierInfoCollection.find(query);
-            const products=await cursor.toArray();
-            res.send(products)
+            const query = {};
+            const cursor = supplierInfoCollection.find(query);
+            const suppliers = await cursor.toArray();
+            res.send(suppliers)
         })
 
-        
-        app.get('/product/:id',async(req,res)=>{
+
+        app.get('/product/:id', async (req, res) => {
             // console.log(req.params);
-            const id=req.params.id;
-            const query ={_id:ObjectId(id)}
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
             const product = await productCollection.findOne(query)
             res.send(product)
         })
 
-        app.put('/product/:id', async(req, res) =>{
+        app.put('/product/:id', async (req, res) => {
             const id = req.params.id;
             const updateproduct = req.body;
             // console.log( req.body);
-            const filter = {_id: ObjectId(id)};
+            const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
                     name: updateproduct.name,
-                    quantity:updateproduct.quantity,
-                    price:updateproduct.price,
-                    img:updateproduct.img,
-                    description:updateproduct.description,
-                    supplier:updateproduct.supplier
-                    
+                    quantity: updateproduct.quantity,
+                    price: updateproduct.price,
+                    email:updateproduct.email,
+                    img: updateproduct.img,
+                    description: updateproduct.description,
+                    supplier: updateproduct.supplier
+
                 }
             };
             const result = await productCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
+
+        })
+        app.delete('/product/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        })
+        app.post('/product', async(req, res) =>{
+            const newProduct = req.body;
+            console.log('adding new user', newProduct);
+            const result = await productCollection.insertOne(newProduct);
+            res.send(result)
+        });
+        app.get('/ordered',async(req,res)=>{
+            const email=(req.query.email);
+            const query = {email:email};
+            const cursor = productCollection.find(query);
+            const products = await cursor.toArray();
+            res.send(products)
 
         })
     }
