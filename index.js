@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const jsonwebtoken = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 const port = process.env.PORT || 5000;
@@ -9,6 +9,24 @@ const app = express();
 //middleware
 app.use(cors())
 app.use(express.json())
+
+const verifyJWT=(req,res,next)=>{
+    const authorizationHeader =req.headers.authorization;
+    if(!authorizationHeader){
+        return res.status(401).send({message:'Unauthorized Access'})
+    }
+    const token=authorizationHeader.split(' ')[1]
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded) {
+        if(err){
+            return res.status(403).send({message:'Forbidden Jutsu'})
+        }
+        console.log('Decoded',decoded);
+        req.decoded=decoded;
+      });
+    
+      
+    next();
+}
 
 
 
@@ -22,8 +40,10 @@ async function run() {
         const supplierInfoCollection = client.db('suppliers').collection('info')
 
 
-        app.post('getToken',async(req,res)=>{
+        app.post('/getToken',async(req,res)=>{
+            
             const user =req.body
+            console.log(user);
             const accessToken=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{
                 expiresIn:'7d'
             })
@@ -89,12 +109,18 @@ async function run() {
             const result = await productCollection.insertOne(newProduct);
             res.send(result)
         });
-        app.get('/ordered',async(req,res)=>{
+        app.get('/ordered',verifyJWT, async(req,res)=>{
+            const decodeddEmail =req.decoded.email
+            
             const email=(req.query.email);
-            const query = {email:email};
+            if(email===decodeddEmail){
+                const query = {email:email};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
             res.send(products)
+            }else{
+                res.status(403).send({message:'Forbidden Justu'})
+            }
 
         })
     }
