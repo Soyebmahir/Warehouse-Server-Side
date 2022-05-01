@@ -110,10 +110,11 @@ async function run() {
             res.send(result)
         });
         app.get('/ordered',verifyJWT, async(req,res)=>{
-            const decodeddEmail =req.decoded.email
+            const decodedEmail =req.decoded.email
+            console.log(decodedEmail);
             
             const email=(req.query.email);
-            if(email===decodeddEmail){
+            if(email===decodedEmail){
                 const query = {email:email};
             const cursor = productCollection.find(query);
             const products = await cursor.toArray();
@@ -129,8 +130,6 @@ async function run() {
     }
 }
 run().catch(console.dir)
-
-
 
 app.get('/', (req, res) => {
     res.send('warehouse is running and  waiting for data')
