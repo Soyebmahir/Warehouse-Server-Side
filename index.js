@@ -83,13 +83,13 @@ async function run() {
             const options = { upsert: true };
             const updatedDoc = {
                 $set: {
-                    name: updateproduct.name,
                     quantity: updateproduct.quantity,
-                    price: updateproduct.price,
-                    email:updateproduct.email,
-                    img: updateproduct.img,
-                    description: updateproduct.description,
-                    supplier: updateproduct.supplier
+                    // name: updateproduct.name,
+                    // price: updateproduct.price,
+                    // email:updateproduct.email,
+                    // img: updateproduct.img,
+                    // description: updateproduct.description,
+                    // supplier: updateproduct.supplier
 
                 }
             };
